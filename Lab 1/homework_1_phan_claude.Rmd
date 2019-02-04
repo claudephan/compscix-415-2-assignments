@@ -39,3 +39,20 @@ region_col <- WorldCities$region
 unique(region_col)
 ```
 Question 2: Above are the unique values for region column.
+```{r}
+WorldCities %>% select(country) %>% unique()
+```
+Question 3: Unique entries from the country column
+```{r}
+WorldCities %>% ggplot(aes(x = population)) + geom_histogram()
+```
+
+```{r}
+WorldCities %>% ggplot(aes(x = population)) +
+  geom_histogram() +
+  xlab('City Population') +
+  ylab('Counts') +
+  ggtitle('Distribution of City Populations') +
+  theme_bw()
+```
+
