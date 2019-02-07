@@ -1,0 +1,119 @@
+---
+title: "COMPSCIX 415.2 Homework 2"
+author: "Claude Phan"
+date: "2/10/19"
+output:
+  html_document:
+    self_contained: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+My Github repository for my assignments can be found at this URL: https://github.com/claudephan/compscix-415-2-assignments.git
+
+```{r load_packages, warning=FALSE, message=FALSE}
+library(mdsr)
+library(tidyverse)
+library(ggplot2)
+```
+
+##Exercise 3.2.4
+```{r}
+ggplot(data = mpg)
+```
+
+
+1. Running ggplot(data = mpg) shows a pot with nothing in it as we did not define what to plot or any aes
+
+```{r}
+glimpse (mpg)
+```
+
+
+2. There are 234 rows in mpg.
+
+```{r}
+?mpg
+```
+
+3. drv variable describes the wheel drive type of the car. f = front-wheel drive, r = rear wheel drive, 4 = 4wd
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = hwy, y = cyl))
+```
+
+
+
+4. The scatterplot above is of hwy vs cyl
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = class, y = drv))
+```
+
+
+5. The scatterplot of class vs drv is not very useful as class is a categorical variable. We are not even able to see how many of each drv type belong to each class.
+
+
+##Exercise 3.3.1
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = "blue"))
+```
+
+1. The color doesn't convey information about the variable, therefor to set an aesthetic manually, we set have to set it as an argument of the geom function, aka outside of aes() 
+
+```{r}
+summary(mpg)
+```
+
+
+2. categorical: manufacturer, model, trans, drv, fl, class
+   continuous:  displ, year, cyl, cty, hwy
+   We can see this information when we run mph by using Summary on mpg
+   
+   
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = cty))
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, size = cty))
+
+#ggplot(data = mpg) + 
+#  geom_point(mapping = aes(x = displ, y = hwy, shape = cty))
+```
+
+
+3. For color, different hues of the color represented the differnt variabtion in cty MPG. For shape, larger circles represented higher amounts of cty MPG vs smaller circles for lower cty MPG. However, shape was not mappable, because there are a finite number of unique shapers, that wouldn't be able to map all the differnt values a contious variable can take.
+
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, size = cty, color = cty))
+```
+
+
+4. The graph above shows a mapping of cty MPG to two differnt aesthetics. You can see that the plot uses both color hues and circle sizes to show the changes in the cty MPG variable.
+
+
+```{r}
+ggplot(mpg, aes(model, cty, fill = manufacturer)) +
+  geom_point(stroke = 3)
+```
+
+
+5. The stroke aesthetic is used to modify the width of the border of shapes that have them. This works with shape 21.
+
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = displ < 5))
+```
+
+
+6. When you map an aesthetics to something other than a a variable name, such as a conditional statement, it evaultes each point against that statement and sets them accordingly. In the example abobe, all values of displ less than 5 were evulated as True and colored teal, while at least 5 were with red.
