@@ -249,4 +249,5 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
 
 
 
-2. Geom_bar takes in only an x variabler and makes the heights of the bars equal to the counts. Geom_col takes in both an x & y, thus the heights of the bars represent values of the y variable. 
+2. Geom_bar takes in only an x variabler and makes the heights of the bars equal to the counts. Geom_col takes in both an x & y, thus the heights of the bars represent values of the y variable.
+
