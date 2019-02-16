@@ -26,7 +26,7 @@ library(nycflights13)
 ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) + 
   geom_point()
 ```
-1. The plot could be better dispolayed as a bar graph. The cty variable only take integer vaklues, thus the points line up vertically. Using geom_bar would chgange this plot from points to bars.
+1. The plot could be better displayed as a bar graph. The cty variable only take integer values, thus the points line up vertically. Using geom_bar would change this plot from points to bars.
 
 
 ```{r}
@@ -41,7 +41,7 @@ ggplot(mpg, aes(cty, hwy)) +
  geom_count()
 ```
 
-3. geom_jitter() keeps the nuymber of points thata re supposerd to be on the graph the same. It just adds some positional variation to the points making it easier to see them all. geom_count() however, keeps all the position of points as they should be. But if two or more points land on th same lopcation, the size of the point gets larger. Both of these are ways to handle overlappoing points.
+3. geom_jitter() keeps the number of points that are supposed to be on the graph the same. It just adds some positional variation to the points making it easier to see them all. geom_count() however, keeps all the position of points as they should be. But if two or more points land on the same location, the size of the point gets larger. Both of these are ways to handle overlapping points.
 
 
 ```{r}
@@ -73,13 +73,14 @@ ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) +
 ```
 
 
-4. The plot shows that cars usually will have better hwy mpg than cty. coord_fixed is important in showing this relationship because it perserves the steapness of the line by making the lenfth of the x & y axis the same. geom_abline is a line with a slope of one, and since our points afre above the line, this indicates that for any value of cty, the coorisponding hwy will be greater.
+4. The plot shows that cars usually will have better hwy mpg than cty. coord_fixed is important in showing this relationship because it preserves the steepness of the line by making the length of the x & y axis the same. geom_abline is a line with a slope of one, and since our points Above above the line, this indicates that for any value of cty, the corresponding hwy will be greater.
 
 
 ##4.4
 
 ```{r}
 my_variable <- 10
+'my_varıable'
 ```
 
 1. This code does not work because variable here is spelled with a 1 instead of an i.  
@@ -161,7 +162,7 @@ filter(flights, is.na(dep_time))
 ```
 
 
-4. NA represents value we don't know, and any vaklue raised to 0 power is 0, reguardless of the value. When you have an unknown number or True, then logically its true. If we have have an unknown & false, we get false because we alredy have a false. Unknown times * 0 is known because we know its a number, just not sure what that number is yet
+4. NA represents value we don't know, and any value raised to 0 power is 0, regardless of the value. When you have an unknown number or True, then logically its true. If we have have an unknown & false, we get false because we already have a false. Unknown times * 0 is known because we know its a number, just not sure what that number is yet
 
 
 
@@ -186,7 +187,18 @@ select(flights, starts_with("arr"), starts_with("dep"))
 ```
 
 
-3. The results are surprising as none of these columns contain TIME, however default case evulation for select is turned off, we can turn it on by setting the argument ignore.case = TRUE
+3. one_of is a helper function for select. With those headers stored in vars, we can select all headers that matches one of the labels in vars
+
+```{r}
+vars <- c("year", "month", "day", "dep_delay", "arr_delay")
+select(flights, one_of(vars))
+
+```
+
+
+
+
+4. The results are surprising as none of these columns contain TIME, however default case evaluation for select is turned off, we can turn it on by setting the argument ignore.case = TRUE
 
 ```{r}
 select(flights, contains("TIME", ignore.case = TRUE))
