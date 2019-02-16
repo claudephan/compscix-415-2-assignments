@@ -1,0 +1,201 @@
+---
+title: "COMPSCIX 415.2 Homework 3"
+author: "Claude Phan"
+date: "2/19/19"
+output:
+  html_document:
+    self_contained: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+My Github repository for my assignments can be found at this URL: https://github.com/claudephan/compscix-415-2-assignments.git
+
+```{r load_packages, warning=FALSE, message=FALSE}
+library(mdsr)
+library(tidyverse)
+library(ggplot2)
+library(nycflights13)
+```
+
+##3.8.1 Exercises
+
+```{r}
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) + 
+  geom_point()
+```
+1. The plot could be better dispolayed as a bar graph. The cty variable only take integer vaklues, thus the points line up vertically. Using geom_bar would chgange this plot from points to bars.
+
+
+```{r}
+?geom_jitter()
+```
+
+2. width and height are parameters for geom_jitter() that control the amount of jittering
+
+
+```{r}
+ggplot(mpg, aes(cty, hwy)) +
+ geom_count()
+```
+
+3. geom_jitter() keeps the nuymber of points thata re supposerd to be on the graph the same. It just adds some positional variation to the points making it easier to see them all. geom_count() however, keeps all the position of points as they should be. But if two or more points land on th same lopcation, the size of the point gets larger. Both of these are ways to handle overlappoing points.
+
+
+```{r}
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) + 
+  geom_boxplot()
+```
+
+
+4. The default position of geom_boxplot as shown above is vertical. 
+
+
+
+
+##3.9.1
+
+```{r}
+?labs()
+```
+
+
+2. labs allows you to control labels within a plot, these labels are x, y, title, subtitle, caption, and tag. labs can set the label string and also determine if the label will show or not.
+
+
+```{r}
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) +
+  geom_point() + 
+  geom_abline() +
+  coord_fixed()
+```
+
+
+4. The plot shows that cars usually will have better hwy mpg than cty. coord_fixed is important in showing this relationship because it perserves the steapness of the line by making the lenfth of the x & y axis the same. geom_abline is a line with a slope of one, and since our points afre above the line, this indicates that for any value of cty, the coorisponding hwy will be greater.
+
+
+##4.4
+
+```{r}
+my_variable <- 10
+```
+
+1. This code does not work because variable here is spelled with a 1 instead of an i.  
+
+
+```{r}
+library(tidyverse)
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy))
+
+filter(mpg, cyl == 8)
+filter(diamonds, carat > 3)
+```
+
+
+2. The above commands have been tweak to run properly.
+
+
+##Exercise 5.2.4
+
+```{r}
+glimpse(flights)
+```
+```{r}
+?flights
+```
+
+
+1.1
+
+```{r}
+filter(flights, arr_delay >= 120)
+```
+
+1.2
+
+```{r}
+filter(flights, dest == 'IAH' | dest == 'HOU')
+```
+
+1.3
+
+```{r}
+filter(flights, carrier == 'UA' | carrier == 'AA' | carrier == 'DL')
+```
+
+1.4
+
+```{r}
+filter(flights, month == 7 | month == 8 | month == 9)
+```
+
+
+1.5
+
+```{r}
+filter(flights, arr_delay > 120, dep_delay <= 0)
+```
+
+
+1.6
+
+```{r}
+filter(flights, dep_delay >= 60, arr_delay < (dep_delay -30))
+```
+
+1.7
+
+```{r}
+filter(flights, dep_time < 600)
+```
+
+
+3. dep_delay, arr_time, arr_delay, air_time are also missing. These rows represent canceled flights
+
+```{r}
+filter(flights, is.na(dep_time))
+```
+
+
+4. NA represents value we don't know, and any vaklue raised to 0 power is 0, reguardless of the value. When you have an unknown number or True, then logically its true. If we have have an unknown & false, we get false because we alredy have a false. Unknown times * 0 is known because we know its a number, just not sure what that number is yet
+
+
+
+```{r}
+NA * 0
+```
+
+##Exercise 5.4.1 
+
+1.
+
+```{r}
+select(flights, dep_time, dep_delay, arr_time, arr_delay)
+```
+
+```{r}
+flights %>% select(dep_time, dep_delay, arr_time, arr_delay)
+```
+
+```{r}
+select(flights, starts_with("arr"), starts_with("dep"))
+```
+
+
+3. The results are surprising as none of these columns contain TIME, however default case evulation for select is turned off, we can turn it on by setting the argument ignore.case = TRUE
+
+```{r}
+select(flights, contains("TIME", ignore.case = TRUE))
+```
+
+
+
+
+
+
+
+
