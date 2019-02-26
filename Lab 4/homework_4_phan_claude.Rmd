@@ -1,0 +1,228 @@
+---
+title: "COMPSCIX 415.2 Homework 4"
+author: "Claude Phan"
+date: "2/25/19"
+output:
+  html_document:
+    self_contained: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+My Github repository for my assignments can be found at this URL: https://github.com/claudephan/compscix-415-2-assignments.git
+
+```{r load_packages, warning=FALSE, message=FALSE}
+library(mdsr)
+library(tidyverse)
+library(ggplot2)
+library(nycflights13)
+```
+
+```{r}
+file_path <- 'flights.csv'
+csv_data <- read_csv(file = file_path)
+```
+
+```{r}
+
+```
+
+
+
+```{r}
+flights %>%
+  filter(month ==2, day ==20) %>%
+  group_by(month, day) %>%
+  summarise(num_cancelled = sum(is.na(dep_time) | is.na(arr_delay)),
+            n_early = sum(is.na(dep_time) | is.na(arr_delay))/ n()
+)
+```
+
+##Exercise 5.6.7
+
+```{r}
+not_cancelled <- flights %>% 
+  filter(!is.na(dep_delay), !is.na(arr_delay))
+```
+
+
+
+2. Below is an alternative approach to "not_cancelled %>% count(dest)" without using count
+
+```{r}
+not_cancelled %>%
+  group_by(dest) %>%
+  summarise(n = n()
+)
+```
+
+
+4. There is a pattern that you can see for the number of canceled flights appears to be bunched up together in little clusters. This could be due to such events such as bad weather. Looking at the average delay timers we can also see that numbers are much higher one days with a lot of cancelled flights.
+
+```{r}
+flights %>%
+  group_by(year, month, day) %>%
+  summarise(num_cancelled = sum(is.na(dep_time) | is.na(arr_delay)),
+            average_depature_delay = mean(dep_delay, na.rm = TRUE),
+            average_arrival_delay = mean(arr_delay, na.rm = TRUE)
+)
+```
+
+
+
+
+5. (EC)
+
+```{r}
+flights %>% group_by(carrier, dest) %>% summarise(n())
+```
+
+
+
+6. The sort argument provides an ascending or descending order to a vector. When used in conjunction with the count, this will order the list of counts we have.
+
+```{r}
+x <- flights %>% group_by(carrier, dest) %>% summarise(n = count(dest))
+x <- x$n
+sort(x)
+```
+
+
+##Exercise 10.5
+
+1. You can determine if an object is a tibble or not by using 'is_tibble'. It will return true or false
+
+
+```{r}
+is_tibble(as_tibble(iris))
+```
+
+
+2. Working with a tibble is much simpler than working with a data frame. Printing and selecting columns with more ease and less typing. It will also generate a warning if the column you are selecting doesn't exist. Especially in printing, the default dataframe won't allow for very easy viewing of a large data set with many rows and columns.
+
+```{r}
+df <- data.frame(abc = 1, xyz = "a")
+df$x
+df["xyz"]
+df
+```
+
+```{r}
+df <- tibble(abc = 1, xyz = "a")
+df$xyz
+df
+```
+
+
+3. Using the [[]] notation we can pull the reference variable. 
+
+```{r}
+var <- "mpg"
+mtcars[[var]]
+```
+
+
+6. n_extra controls how many additional columns to print at the footer of a tibble
+
+
+##Exercise 12.3.3
+
+2. The year field is a character field, thus 1999 and 2000 cannot be used as if they are integers.
+
+```{r}
+table4a %>% 
+  gather('1999', '2000', key = "year", value = "cases")
+```
+
+
+
+3. This wont work because we have duplicates identifiers on the key for Phillip Woods and Age. 
+
+
+```{r}
+people <- tribble(
+  ~name,             ~key,    ~value, ~id,
+  #-----------------|--------|------
+  "Phillip Woods",   "age",       45, 1,
+  "Phillip Woods",   "height",   186, 1,
+  "Phillip Woods",   "age",       50, 2,
+  "Jessica Cordero", "age",       37, 3,
+  "Jessica Cordero", "height",   156, 3
+)
+
+people %>%
+    spread(key = key, value = value)
+```
+
+
+
+
+4. To tidy up this tibble, we apply both a gather then a spread. The variables are weather or not individuals are pregnant. Which is then Broken up into two sub classes of male or female.
+
+```{r}
+preg <- tribble(
+  ~pregnant, ~male, ~female,
+  "yes",     NA,    10,
+  "no",      20,    12
+)
+```
+
+```{r}
+preg %>% 
+  gather(male, female, key = "Pregnant", value = "Not Pregnant") %>%
+  spread(key = pregnant, value = 'Not Pregnant')
+  
+```
+
+
+##Exercise 12.4.3
+
+1. Extra controls what happens when there are too many pieces when using spread, the options are warn, drop, or merge. Fill controls what happens when there are not enough pieces, the options are warn, right, and left.
+
+
+
+```{r}
+tibble(x = c("a,b,c", "d,e,f,g", "h,i,j")) %>% 
+  separate(x, c("one", "two", "three"), extra = "merge")
+```
+
+```{r}
+tibble(x = c("a,b,c", "d,e", "f,g,i")) %>% 
+  separate(x, c("one", "two", "three"), fill = "left")
+```
+
+
+2. The remove argument removes the input columns from output data frame. You would set it equal to false if you still wanted the original data to remain the in data frame.
+
+
+```{r}
+tibble(x = c("a,b,c", "d,e", "f,g,i")) %>% 
+  separate(x, c("one", "two", "three"), fill = "left", remove = FALSE)
+```
+
+
+
+
+Follow these steps:
+- Download the baby_names.txt file from Canvas which is in the Homework 4 assignment section.
+- Load this file into R correctly and take a glimpse of the output.
+- Export this file as a csv file and call it ‘baby_names.csv’.
+- Reload the baby_names.csv file and take another glimpse.
+- Show all of your code and the output. There should be two data import lines of code, one data export
+line of code, and two glimpses of the data.
+
+
+```{r}
+file_path <- 'baby_names.txt'
+baby_data <- read.table(file_path, sep = "|")
+glimpse(baby_data)
+```
+
+```{r}
+write.csv(baby_data, file = "baby_names.csv")
+baby_data2 <- read_csv("baby_names.csv")
+glimpse(baby_data2)
+```
+
