@@ -51,7 +51,7 @@ Whickham %>% count( outcome , smoker ) %>% ggplot(aes(x=outcome, y = n)) +
 ```
 
 
-###### 6. Recode the age variable into an ordered factor with three categories: age <= 44, age > 44 & age <= 64, and age > 64. Now, recreate visualization from above, but facet on your new age factor. What do you see? Does it make sense?
+###### 4. Recode the age variable into an ordered factor with three categories: age <= 44, age > 44 & age <= 64, and age > 64. Now, recreate visualization from above, but facet on your new age factor. What do you see? Does it make sense?
 
 As we can see the older these women get, the less proportion there are thatr died and were smokers. This is expected as there are many ways to die as age begins to settle. However, looking at those under 44, you can see that the ratio looks a bit more even between the smokers and non smokers of those who died. This is also evident by the counts of smokers for those that are alive as well, you can see the propotions are relativlity similair to those dead counterparts.
 

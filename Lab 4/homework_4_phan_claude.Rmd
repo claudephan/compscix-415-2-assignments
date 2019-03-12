@@ -76,9 +76,16 @@ flights %>%
 5. (EC)
 
 ```{r}
-flights %>% group_by(carrier, dest) %>% summarise(n())
+flights %>% group_by(carrier, dest) %>% summarise(arr_delay = mean(arr_delay, na.rm = TRUE)) %>%
+  arrange(desc(arr_delay))
 ```
 
+```{r}
+x <-flights %>% filter(carrier == 'F9')
+x$arr_delay
+quantile(x$arr_delay, na.rm = TRUE)
+mean(x$arr_delay, na.rm = TRUE)
+```
 
 
 6. The sort argument provides an ascending or descending order to a vector. When used in conjunction with the count, this will order the list of counts we have.
