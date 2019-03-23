@@ -1,0 +1,79 @@
+---'
+'
+title: "COMPSCIX 415.2 Homework 8"
+author: "Claude Phan"
+date: "3/18/19"
+output:
+  html_document:
+    self_contained: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+My Github repository for my assignments can be found at this URL: https://github.com/claudephan/compscix-415-2-assignments.git
+
+```{r load_packages, warning=FALSE, message=FALSE}
+library(mdsr)
+library(tidyverse)
+library(ggplot2)
+library(broom)
+library(corrplot)
+library(xml2)
+library(rvest)
+library(jsonlite)
+library(shiny)
+library(shinydashboard)
+library(leaflet)
+library(curl)
+library(dplyr)
+library(htmltools)
+```
+
+```{r}
+### You can use this vector of city names to test your function
+cities <- c('Luxembourg', 'Dublin', 'Brisbane', 'Seville', 'Stockholm', 'Ljubljana')
+
+# API Key: 30ca24bf86d007f8ab2f8a3b2e7dd5612c4f68b2
+```
+
+```{r}
+map_it <- function(contract_name) {
+        url <- paste0("https://api.jcdecaux.com/vls/v1/stations?contract=",contract_name,"&apiKey=30ca24bf86d007f8ab2f8a3b2e7dd5612c4f68b2")
+        df_api = jsonlite::fromJSON(url, flatten = FALSE)
+        position.lng = df_api$position$lng
+        position.lat = df_api$position$lat
+        df_api = cbind(df_api %>% select(-position), position.lng, position.lat) %>%
+                mutate( name = trimws(gsub("[0-9-]"," ", name)),
+                        #address = paste0("<a href='https://www.google.com/maps/search/?api=1&query=",position.lat,",",position.lng,"' target='_blank'>",address,"</a>"),
+                        address = paste0("<a href='https://www.openstreetmap.org/?mlat=",position.lat,"&mlon=",position.lng,"#map=15/",position.lat,"/",position.lng,"' target='_blank'>",address,"</a>"),
+                        title_attrib = paste0("Name: ",name,"<br>Adress: ",address,"<br>Available: ",available_bikes,"/",bike_stands),
+                        color= ifelse(status != "OPEN", "red","blue"),
+                        available_bike_stands = ifelse(color=="red",0,available_bikes))
+        return(df_api)
+        
+}
+```
+
+
+```{r}
+df_api <- map_it('Luxembourg')
+```
+
+```{r}
+df <- df_api %>% select(number, name, available_bikes, longitude = position.lng, latitude = position.lat)
+df
+```
+
+```{r}
+map <- leaflet(df) %>%
+  addTiles() %>%
+  addMarkers(~longitude, ~latitude, label = ~htmlEscape(as.character(available_bikes)))
+```
+
+```{r}
+map
+```
+
+
