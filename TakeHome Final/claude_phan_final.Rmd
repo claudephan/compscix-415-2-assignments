@@ -1,0 +1,259 @@
+---'
+'
+title: "COMPSCIX 415.2 Homework 9/Final"
+author: "Claude Phan"
+date: "3/18/19"
+output:
+  html_document:
+    self_contained: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+My Github repository for my assignments can be found at this URL: https://github.com/claudephan/compscix-415-2-assignments.git
+
+```{r load_packages, warning=FALSE, message=FALSE}
+library(mdsr)
+library(tidyverse)
+library(ggplot2)
+library(broom)
+library(corrplot)
+library(xml2)
+library(rvest)
+library(jsonlite)
+library(shiny)
+library(shinydashboard)
+library(leaflet)
+library(curl)
+library(dplyr)
+library(htmltools)
+```
+
+# Exercise 1 - Sampling Distributions, Functions and For Loops
+
+## STEP 1
+
+Write an R function that does the following:  
+• Takes a sample of size samp_size from this exponential distribution (samp_size is an input parameter for the function)  
+• Calculates the mean of that sample  
+• Calculates the standard deviation of that sample  
+• Returns the calculated mean and standard deviation as a list  
+
+```{r}
+# sample size
+samp_size <- 100
+# set the rate parameter
+samp_rate <- 1/10000
+
+```
+
+```{r}
+samp_fun <- function(samp_size, samp_rate) { 
+  #...your code here...
+  
+  x <- rexp(n = samp_size, rate = samp_rate)
+  samp_avg <- mean(x)
+  samp_std_dev <- sd(x)
+  stats <- list(samp_avg = samp_avg, samp_std_dev = samp_std_dev)
+  
+  return(stats)
+}
+```
+
+```{r}
+sample_stats <- samp_fun(samp_size, samp_rate)
+sample_stats$samp_avg
+sample_stats$samp_std_dev
+```
+
+## STEP 2
+Then write a loop that does this:  
+• Runs the above function 1000 times, with samp_size = 50 and samp_rate = 1/10000  
+• Saves all of the sample means in a vector called sample_means, and all of the sample standard deviations in a vector called sample_sds  
+
+
+```{r}
+# create a vector with 10000 NAs
+sample_means <- rep(NA, 1000)
+sample_sds <- rep(NA, 1000)
+# start a loop
+for(i in 1:1000) {
+  g_samp <- samp_fun(50, 1/10000)
+  sample_means[i] <- g_samp$samp_avg
+  sample_sds[i] <- g_samp$samp_std_dev
+}
+```
+
+## STEP 3
+Then  
+• plot your sample means as a histogram  
+• output the standard deviation of your sample means  
+• calculate the theoretical standard error (σ = 10000, n = sample size)  
+• calculate the mean of the sample standard deviations and use this to calculate the empirical standard error  
+
+```{r}
+# Convert vector to a tibble
+sample_means <- tibble(sample_means)
+sample_sds <- tibble(sample_sds)
+
+sample_means %>% 
+  ggplot(aes(x = sample_means)) + 
+    geom_histogram()
+```
+
+```{r}
+# SD of sample means
+sd_mean_samp <- sd(sample_means$sample_means)
+sd_mean_samp
+```
+
+```{r}
+# theoretical standard error  (σ = 10000, n = sample size)  
+
+SE <- 50/sqrt(10000)
+SE
+```
+
+
+```{r}
+# mean of sample SD
+mean_sd_samp <- mean(sample_sds$sample_sds)
+mean_sd_samp
+
+#empirical standard error
+ESE <- 50/sqrt(mean_sd_samp)
+ESE
+```
+
+
+## STEP 4
+Repeat STEP 2 and STEP 3 using a sample size of 5000.  
+
+```{r}
+# create a vector with 10000 NAs
+sample_means <- rep(NA, 1000)
+sample_sds <- rep(NA, 1000)
+# start a loop
+for(i in 1:1000) {
+  g_samp <- samp_fun(5000, 1/10000)
+  sample_means[i] <- g_samp$samp_avg
+  sample_sds[i] <- g_samp$samp_std_dev
+}
+
+# Convert vector to a tibble
+sample_means <- tibble(sample_means)
+sample_sds <- tibble(sample_sds)
+
+sample_means %>% 
+  ggplot(aes(x = sample_means)) + 
+    geom_histogram()
+
+# SD of sample means
+sd_mean_samp <- sd(sample_means$sample_means)
+sd_mean_samp
+
+# theoretical standard error  (σ = 10000, n = sample size)  
+
+SE <- 50/sqrt(10000)
+SE
+
+# mean of sample SD
+mean_sd_samp <- mean(sample_sds$sample_sds)
+mean_sd_samp
+
+#empirical standard error
+ESE <- 50/sqrt(mean_sd_samp)
+ESE
+```
+
+# Exercise 2 - Linear Regression
+
+Load the train.csv dataset into R and fit a regression model with:  
+• y = SalePrice  
+• Features: LotArea, OverallQual, and ExterQual  
+
+```{r}
+df <- read.table("train.csv", header=TRUE, sep=",")
+sale_lm <- lm(formula = SalePrice ~ LotArea + OverallQual + ExterQual, data = df)
+```
+
+Answer these questions:  
+• Use the broom package to output the coefficients and the R-squared  
+• Interpret the coefficient on LotArea  
+• Interpret the coefficient on ExterQualGd  
+• Compare this model to the model we fit in HW 7 with GrLivArea, OverallQual, Neighborhood. Which is the better fitting model?
+
+```{r}
+summary(sale_lm)
+```
+
+The coefficient on LotArea helps us understand how much the saleprice would increase if the LotArea increases. The same can be said with the OverallQual. You can see that the value in overallqual is larger because it is harder to incrment overallqual than it is to increase lotarea. 
+
+This model  does not fit better than the HW 7 model because it has a lower R-squared value. .695 vs .784. Therefore a larger proportion of variability in Y that is explained by our model.
+
+# Exercise 3 - AB Testing
+
+```{r}
+ab_df <- read.table("ab_test_data.csv", header=TRUE, sep=",")
+```
+
+
+a. What proportion of visitors converted for each version of the webpage?  
+
+```{r}
+a_count <- ab_df %>%
+  filter(version == "A") %>%
+  count()
+
+b_count <- ab_df %>%
+  filter(version == "B") %>%
+  count()
+
+converted_df <- ab_df %>%
+  filter(conversion == 1)
+
+a_conversion_count <- converted_df %>%
+  filter(version == "A") %>%
+  count()
+
+b_conversion_count <- converted_df %>%
+  filter(version == "B") %>%
+  count()
+
+#Converted for website A
+true_a = a_conversion_count/a_count
+true_a = true_a$n[1]
+
+#Converted for website B
+true_b = b_conversion_count/b_count
+true_b = true_b$n[1]
+```
+
+b. Perform the AB test in R. What is the p-value for the AB test (hypothesis test of proportions)?  
+
+```{r}
+n_a <- 2000
+n_b <- 2000
+
+set.seed(10)
+samp_a <- rbinom(n = 1, size = n_a, prob = true_a)
+samp_b <- rbinom(n = 1, size = n_b, prob = true_b)
+```
+
+
+
+```{r}
+two_prop_test <- prop.test(c(samp_a, samp_b), c(2000, 2000))
+two_prop_test$p.value
+```
+
+The p-value below tells us that the conversion rates for Version A and B are significantly different than each other, so we'd conclude here that whatever changes were made to the webpage did have an effect.
+
+
+
+
+
+
+
